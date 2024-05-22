@@ -1,5 +1,7 @@
 package task2;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,24 +17,28 @@ public class App {
         Person person = XmlReader.readPersonFromXml(filePath);
 
         if (person != null) {
+            JsonObject jsonObject = new JsonObject();
+
             if (selectedFields.isEmpty() || selectedFields.contains("name")) {
-                System.out.println("Name: " + person.getName());
+                jsonObject.addProperty("name", person.getName());
             }
             if (selectedFields.isEmpty() || selectedFields.contains("postalZip")) {
-                System.out.println("Postal Zip: " + person.getPostalZip());
+                jsonObject.addProperty("postalZip", person.getPostalZip());
             }
             if (selectedFields.isEmpty() || selectedFields.contains("region")) {
-                System.out.println("Region: " + person.getRegion());
+                jsonObject.addProperty("region", person.getRegion());
             }
             if (selectedFields.isEmpty() || selectedFields.contains("country")) {
-                System.out.println("Country: " + person.getCountry());
+                jsonObject.addProperty("country", person.getCountry());
             }
             if (selectedFields.isEmpty() || selectedFields.contains("address")) {
-                System.out.println("Address: " + person.getAddress());
+                jsonObject.addProperty("address", person.getAddress());
             }
             if (selectedFields.isEmpty() || selectedFields.contains("list")) {
-                System.out.println("List: " + person.getList());
+                jsonObject.add("list", new Gson().toJsonTree(person.getList()));
             }
+
+            System.out.println(new Gson().toJson(jsonObject));
         }
     }
 }
