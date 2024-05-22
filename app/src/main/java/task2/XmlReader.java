@@ -1,53 +1,74 @@
 package task2;
 
-import java.io.File;
-import java.util.Arrays;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-///modified
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class XmlReader {
     public static Person readPersonFromXml(String filePath) {
         try {
             File xmlFile = new File(filePath);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(xmlFile);
-            doc.getDocumentElement().normalize();
-
-            NodeList nList = doc.getElementsByTagName("person");
-            if (nList.getLength() > 0) {
-                Node node = nList.item(0);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) node;
-                    Person person = new Person();
-                    person.setName(getTagValue("name", element));
-                    person.setPostalZip(getTagValue("postalZip", element));
-                    person.setRegion(getTagValue("region", element));
-                    person.setCountry(getTagValue("country", element));
-                    person.setAddress(getTagValue("address", element));
-                    // Assuming 'list' is a comma-separated string in XML
-                    String listValue = getTagValue("list", element);
-                    if (listValue != null) {
-                        person.setList(Arrays.asList(listValue.split(",")));
-                    }
-                    return person;
-                }
-            }
-        } catch (Exception e) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            PersonHandler handler = new PersonHandler();
+            saxParser.parse(xmlFile, handler);
+            return handler.getPerson();
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private static String getTagValue(String tag, Element element) {
-        NodeList nodeList = element.getElementsByTagName(tag).item(0).getChildNodes();
-        Node node = (Node) nodeList.item(0);
-        return node.getNodeValue();
+    private static class PersonHandler extends DefaultHandler {
+        private Person person;
+        private StringBuilder data;
+
+        private String currentElement;
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+            currentElement = qName;
+            if ("person".equals(qName)) {
+                person = new Person();
+            }
+            data = new StringBuilder();
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if ("person".equals(qName)) {
+                // End of person element, do nothing
+            } else if ("name".equals(qName)) {
+                person.setName(data.toString());
+            } else if ("postalZip".equals(qName)) {
+                person.setPostalZip(data.toString());
+            } else if ("region".equals(qName)) {
+                person.setRegion(data.toString());
+            } else if ("country".equals(qName)) {
+                person.setCountry(data.toString());
+            } else if ("address".equals(qName)) {
+                person.setAddress(data.toString());
+            } else if ("list".equals(qName)) {
+                String[] items = data.toString().split(",");
+                person.setList(List.of(items));
+            }
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            data.append(new String(ch, start, length));
+        }
+
+        public Person getPerson() {
+            return person;
+        }
     }
 }
