@@ -1,5 +1,5 @@
 // src/main/java/com/example/Person.java
-package com.example;
+package task2;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

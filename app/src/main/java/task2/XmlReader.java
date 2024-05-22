@@ -1,5 +1,5 @@
 // src/main/java/com/example/XmlReader.java
-package com.example;
+package task2;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
