@@ -1,7 +1,9 @@
-// src/main/java/com/example/Main.java
 package task2;
 
-public class Main {
+import java.util.Arrays;
+import java.util.List;
+
+public class App {
     public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println("Please provide the path to the XML file.");
@@ -9,15 +11,28 @@ public class Main {
         }
 
         String filePath = args[0];
+        List<String> selectedFields = Arrays.asList(args).subList(1, args.length);
         Person person = XmlReader.readPersonFromXml(filePath);
 
         if (person != null) {
-            System.out.println("Name: " + person.getName());
-            System.out.println("Postal Zip: " + person.getPostalZip());
-            System.out.println("Region: " + person.getRegion());
-            System.out.println("Country: " + person.getCountry());
-            System.out.println("Address: " + person.getAddress());
-            System.out.println("List: " + person.getList());
+            if (selectedFields.isEmpty() || selectedFields.contains("name")) {
+                System.out.println("Name: " + person.getName());
+            }
+            if (selectedFields.isEmpty() || selectedFields.contains("postalZip")) {
+                System.out.println("Postal Zip: " + person.getPostalZip());
+            }
+            if (selectedFields.isEmpty() || selectedFields.contains("region")) {
+                System.out.println("Region: " + person.getRegion());
+            }
+            if (selectedFields.isEmpty() || selectedFields.contains("country")) {
+                System.out.println("Country: " + person.getCountry());
+            }
+            if (selectedFields.isEmpty() || selectedFields.contains("address")) {
+                System.out.println("Address: " + person.getAddress());
+            }
+            if (selectedFields.isEmpty() || selectedFields.contains("list")) {
+                System.out.println("List: " + person.getList());
+            }
         }
     }
 }
